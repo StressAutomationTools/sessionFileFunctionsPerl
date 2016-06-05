@@ -105,9 +105,6 @@ sub arrayToArrayString{
 		if($ubound == 0){
 			$arrayString = "\[ ".$array[0]." \]";
 		}
-		elsif($ubound == -1){
-			$arrayString = "\[\]";
-		}
 		else{
 			if($n == 0){
 				$arrayString = "\[ ".$array[$n];
@@ -119,6 +116,9 @@ sub arrayToArrayString{
 				$arrayString = $arrayString." , ".$array[$n];
 			}
 		}
+	}
+	unless(@array){
+		$arrayString = "\[ \]";
 	}
 	return $arrayString;
 }
