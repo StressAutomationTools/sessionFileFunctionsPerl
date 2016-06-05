@@ -91,6 +91,92 @@ sub testExpandAndContract{
 
 }
 
+
+sub arrayToArrayString{
+	#warning, decimal values should be provided as strings as a decimal .0 may get cut off and output an integer
+	my @array = @_;
+	my $ubound = @array - 1;
+	my $arrayString = "";
+	for(my $n = 0; $n <= $ubound; $n++){
+		unless(($array[$n] =~ m/^[+-]?\d+$/ or $array[$n] =~ m/^[+-]?\d+\.\d*[Ee]?[+-]?\d*$/) or substr($array[$n], 0, 1) eq "\""){
+			#quote strings
+			$array[$n] = "\"".$array[$n]."\"";
+		}
+		if($ubound == 0){
+			$arrayString = "\[ ".$array[0]." \]";
+		}
+		elsif($ubound == -1){
+			$arrayString = "\[\]";
+		}
+		else{
+			if($n == 0){
+				$arrayString = "\[ ".$array[$n];
+			}
+			elsif($n == $ubound){
+				$arrayString = $arrayString." , ".$array[$n]." \]";
+			}
+			else{
+				$arrayString = $arrayString." , ".$array[$n];
+			}
+		}
+	}
+	return $arrayString;
+}
+
+sub testArrayToArrayString{
+	#an empty array
+	my @array;
+	print arrayToArrayString(@array)."\n";
+	#single value array
+	@array = (1);
+	print arrayToArrayString(@array)."\n";
+	#multiple values, text, integer, various decimal
+	@array = (1, 10000000, "a text string", "1.0", "1.", 0., "1004.e+7", "1004.+6", -75., -14, "10.-7", "10.0E-7");
+	print arrayToArrayString(@array)."\n";
+}
+
 #unchecked from this point on
+
+sub commandString{
+	# order of inputs: command, values for command in correct order, all in one array of strings
+	#assemble command
+	my @values = @_;
+	my $command = shift(@values);
+	my $commandString = "";
+	$commandString = $command."( ";
+	my $ubound = @values - 1;
+	my $outputString;
+	for(my $n = 0; $n <= $ubound; $n++){
+		my $substring = $values[$n];
+		if($substring =~ m/\[.*\]/){
+			#inputstring is array
+		}
+		else{
+			#add quotes to substring
+			unless(substr($substring, 0, 1) eq "\""){
+				$substring = "\"".$substring."\"";
+			}
+		}
+		if($n == 0){
+			$commandString = $commandString.$substring;
+		}
+		else{
+			$commandString = $commandString." , ".$substring;
+		}
+		if($n == $ubound){
+			$commandString = $commandString." )";
+		}
+	}
+	if(length($commandString <= 80)){
+		$outputString = $commandString."\n";
+	}
+	else{
+		#split string into 80 char pieces
+	}
+	return $outputString;
+}
+
+#print commandString("theCommand", "This is a string", "[1234 ,1234 ,234 ,1234]", "[ \"string\", \"string\", \"string\", \"string\" ]");
+
 
 1;
