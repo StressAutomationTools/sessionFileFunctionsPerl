@@ -137,6 +137,33 @@ sub testArrayToArrayString{
 
 #unchecked from this point on
 
+sub splitString{
+	#this command can be improved to reduce number of string splits and use all 80 characters when not splitting strings
+	#needs testing with actual commands that are then tested in patran
+	my $command = $_[0];
+	my $outputstring = "";
+	while(length($command) > 80){
+		my $substring = substr($command, 0, 73);
+		my $count = () = $substring =~ /\"/g;
+		if($count % 2 == 0){
+			$outputstring = $outputstring.$substring." \@\n";
+			$command = substr($command, 73);
+		}
+		else{
+			$outputstring = $outputstring.$substring."\" \/\/ \@\n";
+			$command = "\"".substr($command, 73);
+		}
+	}
+	$outputstring.$command."\n";
+}
+
+
+sub testSplitString{
+	my $command = "a_long_command( [ \"Yes... yes. This is a fertile land, and we will thrive. We will rule over all this land, and we will call it... This Land.\", \"I think we should call it... your grave!\", \"Ah! Curse your sudden but inevitable betrayal!\", \"Ha ha ha! Mine is an evil laugh! Now DIE!\", \"Oh no, God, oh dear God in heaven...\" ], 2336553255, 235411605143, 2318548135132321, 528641321321834545, 2316846754132168432164321321, 1987412313218425132148132, 1864332132187414321688744351321, 684132103214681384323138, 31358432131381513)";
+	print splitString($command);
+}
+
+
 sub commandString{
 	# order of inputs: command, values for command in correct order, all in one array of strings
 	#assemble command
@@ -167,16 +194,17 @@ sub commandString{
 			$commandString = $commandString." )";
 		}
 	}
-	if(length($commandString <= 80)){
+	if(length($commandString) <= 80){
 		$outputString = $commandString."\n";
 	}
 	else{
-		#split string into 80 char pieces
+		$outputString = splitString($commandString);
 	}
 	return $outputString;
 }
 
-#print commandString("theCommand", "This is a string", "[1234 ,1234 ,234 ,1234]", "[ \"string\", \"string\", \"string\", \"string\" ]");
-
+sub TestCommandString{
+	print commandString("theCommand", "This is a string", "[1234 ,1234 ,234 ,1234]", "[ \"string\", \"string\", \"string\", \"string\", \"string\", \"string\", \"string\", \"string\", \"string\", \"string\" ]");
+}
 
 1;
